@@ -6,7 +6,7 @@ anything else would, in my considered view, be a violation of personal integrity
 software in this repository, my repository, my style is law, although it is a law that may be
 altered, if I would happen to stumble upon a reason to change my mind.
 
-Inspirations, sometimes followed and sometimes opposed, are:
+Inspirations, sometimes followed and sometimes ignored/opposed/altered, are:
 (A) https://www.kernel.org/doc/Documentation/process/coding-style.rst (the baseline)
 (B) https://man.openbsd.org/style  (reviewed as a second opinion)
 (C) https://suckless.org/coding_style (considered, in essence, ideologically sound, but not all) 
@@ -16,25 +16,25 @@ For now, the following is my preferences, i.e., the current philostone coding la
 File Layout
 each header-and-code file-pair should compile separately (e.g. gcc -Wall -c a.c, that presumably
 is including a file named a.h) without errors, and as such it should include:
-* a leading informative (c-style) comment about file content and relations to other files
-* necessesary (and only necessary) header includes
-* macro definitions (local, otherwise they should be placed in corresponding header)
-* type declarations (local, otherwise as above)
-* necessary forward function declarations
+  * a leading informative (c-style) comment about file content and relations to other files
+  * necessesary (and only necessary) header includes
+  * macro definitions (local, otherwise they should be placed in corresponding header)
+  * type declarations (local, otherwise as above)
+  * necessary forward function declarations
 	(avoid if possible -> if req. perhaps you should split into more translation units)
 	placed in the same order as definitions below
-* global variabe definitions (avoid if possible)
-* function definitions (in the order that minimizes the req. for forward declarations),
-  my view is that this approach is beneficial for overall program logic (i.e. what should/can
-  be nested within a function and what should be a function of its own...)
-* main (if present), kept as small as possible,
-  aim for main is for it to clearly display overall program functionality (structure)
+  * global variabe definitions (avoid if possible)
+  * function definitions (in the order that minimizes the req. for forward declarations),
+	my view is that this approach is beneficial for overall program logic (i.e. what
+	should/can be nested within a function and what should be a function of its own...)
+  * main (if present), kept as small as possible,
+	aim for main is for it to clearly display overall program functionality (structure)
 
 * avoid line length above 100 characters (rationale: the commonly stated requirement of <80
   is, in my opinion, for crt (old, not used anymore) displays, but >100 becomes unreadable,
   see also the reasoning about indentation and leading whitespace below)
 
-Headers
+Header includes
 * first, system headers, in alphabetical order
 * after an empty line, local headers, in relevance/logical order, because ...
 * try to avoid cyclic header inclusions -> structure headers and files such that it is possible
@@ -42,8 +42,10 @@ Headers
 
 C Features
 * comments: I actually like cpp-style (contrary to e.g. ref. C), i.e. //, for short comments,
-  especially for end-of-line explanations or own line code section "headers" within functions
-  (altough these should be kept to a minimum), but I prefer /* */ for longer explanations, e.g.
+  especially for end-of-line explanations or code section "headers" within functions, in order
+  to be able to comment out entire funcions with a c-style comment
+  (altough these within function comments should be kept to a minimum),
+  but I prefer /* */ for longer explanations, e.g.
   ahead of function declarations etc.
 
 Blocks
@@ -82,7 +84,7 @@ Indentation - Leading whitespace[s]
   need more than 3 levels of indentation, your're screwed anyway, and should fix your program",
   although I'm stretching it to 4 levels and a width-limit of 100 characters - as stated in
   File Layout above).
-* Although I understand the rationale behind stating that indentations in multiline macro
+* Although I do understand the rationale behind stating that indentations in multiline macro
   definitions should be made with spaces (e.g., ref. C), I consider that argument motivated
   by human readability -after- preprocessing (i.e. macro substitution), but my focus is more on
   human usability/readability -while editing- the code. My preference is therefore to use tabs
@@ -129,7 +131,7 @@ Switch
 
 Naming
 * Use lower case letters in function and variable names, do not use mixed-case phrasing,
-  i.e. count_numbers() -NOT- CountNumbers
+  i.e. count_numbers() -NOT- CountNumbers()
 * Use upper case only names for constants and macros
 * Global names, like functions, should be descriptive
 * Function arguments should be descriptive but still as short as possible, and they should
