@@ -1,0 +1,165 @@
+
+philostone coding style
+=======================
+
+[1]	Linux kernel coding style, <src-root>/Documentation/process/coding-style.rst
+[2]	GNU Coding Standards, https://www.gnu.org/prep/standards/standards.html
+[3]	OpenBSD Kernel source file style guide (KNF), https://man.openbsd.org/style
+[4]	http://suckless.org/coding_style
+
+While coding style is ...
+Mostly aligning with the linux kernel codiing style [1], with a few notable
+exceptions...
+
+...
+
+0) coding style example (excessively commented, for the present purpose)
+
+typedef struct _my_obj {		// feel free to typedefs for program specific structs
+	int		count;		// see example below
+	struct _my_obj	*objects;
+} my_object_t;				// use name_t for syntax highlightning as a type
+
+/* explain what the function name and code doesn't explain by itself - and if required, how
+ * it works - using a c-style (multiline /**/) comment, minimize the use of comments within the
+ * function, these comments should be limited to clarifying short snippets, preferably as
+ * end-of-line comments, and then by use of cpp-style (single line //) comments, in order to
+ * preserve the possibility to comment out an entire function with a c-style comment mark-up
+ * (and avoid having to use #if 0 compiler directives that seem to fail changing syntax
+ * highlightning for most editors)
+ */
+static inline char *			// storage, return value and attributes on a separate line
+text_function(char *a, char *b,		// never a space between function name and parenthesis
+	      char *c, char *b)		// align next line with previous parameter (add spaces)
+{					// opening brace of functions always at column 1
+	...
+
+	my_object_t obj = {0, NULL};	// highlights struct as a type, an "object"
+	my_object_t *obj_ptr = NULL;	// clearly a pointer to an object of the highlighted type
+
+	switch (d) {			// one tab, 8 characters (NOT spaces), for indentation
+	case 'A':			// align case with switch to avoid double indentation
+	case 'B':
+		// do A and B		// allways statements on next line, next indentation level
+		break;			// with break on separate line
+	case 'C': return NULL;		// unless really trivial 'one-liners', where
+	case 'D': do_this(); break;	// this example in (very!) special cases may be accepted
+	case 'E':
+		// do C
+		[[fallthrough]];	// if C23 ...
+	default:
+		// do default
+		break;
+	}				// normally, closing brace alone on line
+
+	if (condition1)			// space after keywords, NOT within parenthesis
+		do_this1();		// never space after function names
+	else
+		do_this2();		// no space before end-of-statement
+
+	if (condition1)	do_this1();	// for -really- simple 'one-liners', line-saving like this
+	else do_this2();		// can be accepted, unless it clutters too much
+
+	if (condition2) {		// opening brace on same line
+		e += 1;			// spaces around most binary
+		f = (cond3) ? g : h;	// and ternary oprators
+		i++;			// not between variables and postfix operators
+		++j;			// or suffix operators 
+		ptr = &struct;		// or unary operators
+		ptr->member = 0;	// or member operators
+	} else {			// closing brace with continuation on same line
+		do_this4();
+	}				// closing brace aligning with block beginning (the if)
+
+	while (condition4) {		// enclose multiline single statement in braces
+		if (condition5)
+			do_this5();
+	}
+
+	...
+	return c;			// make sure there's no trailing whitespace
+}
+
+1) indentation
+
+Indentation is made with tabs, and tabs are 8 characters, period. Besides all perfectly valid
+reasons provided by [1], I'll add that if you, for whatever the reason, find yourself editing
+code with a standard text editor, for example nano, indentation with spaces is nothing less than
+torture. That is, the GNU standard [2] is NOT accepted. The only exception to the "never use
+spaces for indentation" rule is when splitting long lines and the last tab is too long in order
+to align properly, for example with long function parameter lists, see 0).
+
+2) line length and breaks
+
+My preference for line length has increased from the traditional 80 characters to 100, simply
+because standard screen real estate has become larger. My standard terminal window is set to
+open with 105 columns in order to fit a line numbered nano session covering 100 characters.
+
+3) braces
+
+Opening braces for blocks are placed last on the line and for function definitions at the
+beginning of next line. Closing brace alone on the line, except for continuing statements (i.e.
+else, while, etc.). Do not use braces for single statements. Always put single statements on
+a separate line, really simple 'one-liners', see 0), may be kept as one line, unless it clutters
+the code too much (programmer's freedom with responsibility). Examples are single case branches
+and simple if (cond) do_this; However, enclose multilevel single statement in braces. The GNU
+standard [2] with 2 spaces extra indentation and the opening brace on a separate line is in my
+considered view not only very hard to read (no alignment between block beginning and end, it also
+makes the code appear thoroughly scattered) and extremely ugly (and certainly not even close to
+be compatible with the 8 character and tab indentation requirement). For me this GNU brace
+placement style is, frankly speaking, simply daft.
+
+4) spaces
+
+DO put a space after keywords, NOT after function names, to indicate the difference, you see!
+However, the Linux style exceptions for keywords such as sizeof, typeof, etc. [1] is valid and
+should be used (because these keywords are used in the same way as functions). That is,
+once again, the GNU standard [2] with its excessive use of spaces is NOT accepted.
+
+Do NOT add spaces inside parenthesis, but DO put one after each comma in parameter lists.
+Also do NOT add spaces around structure member operators. DO put one space around binary and
+ternary operators, but NOT after unary and prefix increment and decrement operators, also NOT
+before postfix operators.
+
+Do NOT leave trailing whitespace.
+
+5) naming
+
+Follow the Linux style [1]. That is, local variables within functions - which should be short and
+self-explanatory to the greatest extent possible - should be short and symbolic, preferably
+single or only few characters long. Global variables (to be avoided) and global function names
+(i.e. declared in header files) should be descriptive (but to the point, i.e. as short as
+possible). Do NOT use mixed-cased names, uppercase letters are "reserved" for constants, macros,
+and suchlike. Use underscores to separate words. CamelCase is a definitive no go.
+
+For local scope function names, naming is essentially free, making personal shortcuts acceptable.
+Therefore, always declare them static to the translation unit. However, as it is a quite common
+scenario that functions which initially are local to a translation unit later become global
+(i.e. are added to the header file and used in another unit), the recommendation is to always
+use the global function naming style.
+
+6) typedefs
+
+Here my preference differs slightly from the Linux style in that I tend to find typedefs for
+structs (not for pointers) somewhat "stylish". Structs are the "objects", the "custom" types
+of the C language, and typedefs give them names. Moreover, I like the fact that editors tend
+to provide syntax highlightning for typedefs (at least if they have the format: my_struct_t),
+making a typedef'ed struct appear as a type, which it in some sense is. This is also why
+typedef:ing pointers is bad, it makes a pointer to an object appear being an object.
+
+However, I agree with that the primary benefit lies where it is explicitly intended to hide the
+inner structure of structs (and use accessor functions). The main difference in preference
+is -where- I consider such "hiding" is appropriate. For me, program/library specific structures,
+only to be used with that specific library are perfectly valid to be typedef:ed "objects". But
+then, they should be declared and explained in the main header file that must be included in order
+to use the library. The rationale is that as a programmer you should understand how to use
+a library before using it. Therefore, it is perfectly fine to have typedefs specific for a lib.
+
+7) functions
+
+
+file layout
+headers, includes
+c features
+pointers
+scope
