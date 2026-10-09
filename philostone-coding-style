@@ -92,8 +92,9 @@ to align properly, for example with long function parameter lists, see 0).
 2) line length and breaks
 
 My preference for line length has increased from the traditional 80 characters to 100, simply
-because standard screen real estate has become larger. My standard terminal window is set to
-open with 105 columns in order to fit a line numbered nano session covering 100 characters.
+because standard screen real estate has become larger. Moreover, it better allows end-of-line
+comments which I often consider helpful and appropriate. My standard terminal window is set to
+open up with 105 columns in order to fit a line numbered nano session covering 100 characters.
 
 3) braces
 
